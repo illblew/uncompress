@@ -1,0 +1,100 @@
+#!/usr/bin/env ruby
+# encoding: UTF-8
+
+module Uncompress
+  
+  DATE           = Time.now.strftime("%Y-%m-%d")
+  VERSION        = "0.0.1"
+  VERSION_STRING = "uncompress version #{Uncompress::VERSION} (#{Uncompress::DATE})"
+
+  module_function
+ 
+  ##
+  # Print usage and exit
+
+  def usage
+    puts <<-EOF
+    
+    #{VERSION_STRING}
+    Usage: uncompress [--help] file
+    
+    Uncompressable file extensions:
+      .zip
+      .tar
+      .tar.gz
+      .tgz
+      .tar.bz2
+      .tbz
+      
+    Files will be extracted into your current directory. 
+        
+    EOF
+  end
+
+  ##
+  # Find and return paths to tar and unzip binaries
+
+  def find_bins
+    if `which tar` == ""
+      abort("Cannot find 'tar' binary, exiting.")
+    elsif `which unzip` == ""
+      abort("Cannot find 'unzip' binary, exiting.")
+    else
+      return [`which tar`.chomp!, `which unzip`.chomp!]
+    end
+  end
+
+  ##
+  # Parse filename and return command and options to uncompress
+
+  def parse(file)
+    exts = file.split(".")
+    cmd, opts = ""
+
+    exts.each do |f|
+      if f =~ /zip/
+        cmd = "unzip"
+        break
+      elsif f =~ /tgz/
+        cmd = "tar"
+        opts = "z"
+        break
+      elsif f =~ /tbz/
+        cmd = "tar"
+        opts = "j"
+        break
+      elsif f =~ /tar/
+        cmd = "tar"
+      end
+      if f =~ /gz/
+        opts = "z"
+      elsif f =~ /bz2/
+        opts = "j"
+      end
+    end
+
+    return [cmd, opts]
+  end
+  
+  ##
+  # Main
+
+  if ARGV.count < 1 || ARGV[0] == "--help"
+    usage
+  else
+    tar, unzip = find_bins
+    cmd, opts = parse(ARGV[0])
+
+    if cmd == "unzip"
+      file = File.expand_path(ARGV[0])
+      `#{unzip} \"#{file}\"`
+    elsif cmd == "tar"
+      file = File.expand_path(ARGV[0])
+      `#{tar} xv#{opts}f \"#{file}\"`
+    else
+      puts "\nError! Could not parse '#{ARGV[0]}'\n"
+      usage
+    end
+  end
+
+end
