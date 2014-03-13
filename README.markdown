@@ -3,19 +3,19 @@
 
 ### Install
 
-Download the source and ```rake install```. I'll gem-ify it once I get more feedback from real-world usage. 
+Download the source and ```rake install```. I'll gem-ify it once I get more feedback from real-world usage. You'll need ```unzip``` and ```tar``` installed, which if you're on Linux or OSX, you do.
 
 ### Usage
 
 uncompress [--help] file
 
 Uncompressable file extensions:
-  .zip
-  .tar
-  .tar.gz
-  .tgz
-  .tar.bz2
-  .tbz
+- .zip
+- .tar
+- .tar.gz
+- .tgz
+- .tar.bz2
+- .tbz
   
 Files will be extracted into your current directory. 
 
